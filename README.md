@@ -2477,14 +2477,14 @@ var SAVE_KEY = 'tradeTogether_v1';
 var saveTimer = null, myUsername = null, myWalletAddress = null;
 
 // ── Tournament times — hardcoded UTC (same on every device worldwide) ─────────
-// Unlock: 11:54 PM ET 4/2/2026 (EDT = UTC-4) = 03:54 UTC 4/3/2026
+// Unlock: 9:00 AM ET 4/3/2026 (EDT = UTC-4) = 13:00 UTC
 // Warn:   8:45 AM ET 4/5/2026               = 12:45 UTC
 // Close:  9:00 AM ET 4/5/2026               = 13:00 UTC
 function getTournamentOpen(){
-  return new Date(Date.UTC(2026,3,3,3,54,0));
+  return new Date(Date.UTC(2026,3,3,13,0,0));
 }
 function isTournamentOpen(){
-  return new Date()>=new Date(Date.UTC(2026,3,3,3,54,0));
+  return new Date()>=new Date(Date.UTC(2026,3,3,13,0,0));
 }
 function getTournamentWarn(){
   return new Date(Date.UTC(2026,3,5,12,45,0));
@@ -2600,7 +2600,18 @@ function startGateCountdown(){
     document.getElementById('cd-m').textContent=pad2(Math.floor((d%3600000)/60000));
     document.getElementById('cd-s').textContent=pad2(Math.floor((d%60000)/1000));
     var el=document.getElementById('cd-date');
-    if(el){try{el.textContent=getTournamentOpen().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/New_York',timeZoneName:'short'});}catch(e){}}
+    if(el){
+      try{
+        var etStr    = getTournamentOpen().toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/New_York',timeZoneName:'short'});
+        var localStr = getTournamentOpen().toLocaleString(undefined,{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+        // Only show local time if it differs from ET
+        if(localStr !== etStr){
+          el.textContent = etStr + '  ·  Your time: ' + localStr;
+        } else {
+          el.textContent = etStr;
+        }
+      }catch(e){}
+    }
   }
   t();cdInt=setInterval(t,1000);
 }
